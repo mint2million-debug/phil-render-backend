@@ -4,7 +4,10 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
+const cors = require('cors');
+
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -51,7 +54,7 @@ app.post('/api/chat', async (req, res) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + OPENAI_KEY },
       body: JSON.stringify({
-        model: 'gpt-4.1',
+        model: 'model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are Phil, a friendly professional golf coach. Give concise, actionable advice.' },
           { role: 'user', content: question }
@@ -62,8 +65,19 @@ app.post('/api/chat', async (req, res) => {
     });
 
     const j = await r.json();
-    const answer = j.choices && j.choices[0] && (j.choices[0].message ? j.choices[0].message.content : j.choices[0].text) || 'No answer';
-    res.json({ answer });
+
+if (!r.ok) {
+  console.error('OpenAI error status:', r.status, j);
+  return res.status(500).json({
+    error: 'OpenAI request failed',
+    status: r.status,
+    details: j
+  });
+}
+
+const answer = j?.choices?.[0]?.message?.content || 'No answer';
+res.json({ answer });
+
   } catch (err) {
     console.error('Chat error', err);
     res.status(500).json({ error: String(err) });
