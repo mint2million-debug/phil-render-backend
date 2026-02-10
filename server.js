@@ -54,7 +54,7 @@ app.post('/api/chat', async (req, res) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + OPENAI_KEY },
       body: JSON.stringify({
-        model: 'model: 'gpt-4o-mini',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are Phil, a friendly professional golf coach. Give concise, actionable advice.' },
           { role: 'user', content: question }
